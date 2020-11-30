@@ -1,4 +1,8 @@
 #include <Keypad.h>    // 引用Keypad程式庫
+#include <Servo.h>
+
+Servo myservo; // 建立Servo物件，控制伺服馬達
+
 
 #define KEY_ROWS 4 // 按鍵模組的列數
 #define KEY_COLS 4 // 按鍵模組的行數
@@ -23,6 +27,7 @@ int T;
 void setup(){
   T = 0;
   Serial.begin(9600);
+  myservo.attach(5); // 連接數位腳位5，伺服馬達的訊號線
 }
   
 void loop(){
@@ -33,6 +38,9 @@ void loop(){
     T=setTime();
     Serial.print("set time to ");
     Serial.println(T);
+    myservo.write(180);
+    delay(30);
+    
   }
 }
 
@@ -62,9 +70,3 @@ int setTime()
   
   return t;
 }
-//
-//void showTime()
-//{
-//  
-//}
-// Serial.println(key);  // 顯示按鍵的字元
