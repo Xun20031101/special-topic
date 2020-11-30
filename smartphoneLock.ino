@@ -48,17 +48,15 @@ int setTime()
     {
       if(key=='#')
         break;
-      else if(key>='0' && key<='9')
+      else if(key>='0' && key<='9' && digis<4)
       {
         t = t*10 + (key-'0');
         digis++;
         Serial.println(t);
-        if(digis==4)  // 一輸入四位數就離開
-          break;
       }
       else if(key=='*')
         t=0;
-        
+        digis=0;
      }
   }
   
