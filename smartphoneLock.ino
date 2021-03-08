@@ -38,6 +38,19 @@ byte colPins[KEY_COLS] = {22,24,26,28};     // 按鍵模組，行1~4接腳。
 byte rowPins[KEY_ROWS] = {30,32,34,36}; // 按鍵模組，列1~4接腳。 
 Keypad myKeypad = Keypad(makeKeymap(keymap), rowPins, colPins, KEY_ROWS, KEY_COLS);// 初始化Keypad物件
 int T;
+int digitNumber[11] = 
+{252,96,218,242,102,
+182,190,224,254,246,0};
+
+int latchPin = 44;
+int clockPin = 29;
+int dataPin = 23;
+int d0=45;
+int d1=46;
+int d2=25;
+int d3=27;
+
+int numToShow = 0;
 
 // 開鎖或關鎖
 void locker(bool toggle) {
@@ -57,6 +70,14 @@ void setup() {
   Serial.print("size of tag:");
   Serial.println(sizeof(tags));
   Serial.println("RFID reader is ready!");
+  pinMode(latchPin, OUTPUT);
+  pinMode(clockPin, OUTPUT);
+  pinMode(dataPin, OUTPUT);
+  pinMode(d0, OUTPUT);
+  pinMode(d1, OUTPUT);
+  pinMode(d2, OUTPUT);
+  pinMode(d3, OUTPUT);
+  Serial.begin(9600);
 
   SPI.begin();
   mfrc522.PCD_Init();       // 初始化MFRC522讀卡機模組
@@ -74,7 +95,17 @@ void loop() {
     T=setTime();
     Serial.print("set time to ");
     Serial.println(T);
+       show4Num(numToShow);
+
+  if(Serial.available())
+  {
+    char c = Serial.read();
+    if(c == '@')
+    {
+      numToShow = Serial.parseInt();
     }
+  }
+
     
    // 確認是否有新卡片
     if (mfrc522.PICC_IsNewCardPresent() && mfrc522.PICC_ReadCardSerial()) {
@@ -105,6 +136,23 @@ void loop() {
 
       mfrc522.PICC_HaltA();  // 讓卡片進入停止模式      
     } 
+void showNum(int num, int digit) {
+  if(num>=0 && num<=10)
+  {
+    for(int i=d0; i<=d3; i++)
+    {
+        digitalWrite(i,HIGH);
+    }
+    
+    int numberToDisplay = digitNumber[num];
+    byte low_Byte = lowByte(numberToDisplay);
+      
+    digitalWrite(latchPin, LOW);
+    shiftOut(dataPin, clockPin, MSBFIRST, low_Byte);  
+    digitalWrite(latchPin, HIGH);
+
+    digitalWrite(digit, LOW);
+  }
 
 }
 int setTime()
@@ -137,31 +185,72 @@ int setTime()
   return t;
 }
 
-
-
-
-
-
-//int latchPin = 8;  // Latch pin (STCP腳位)
-//int clockPin = 12; // Clock pin (SHCP腳位)
-//int dataPin = 11;  // Data pin (DS腳位)
+//int digitNumber[11] = 
+//{252,96,218,242,102,
+//182,190,224,254,246,0};
 //
-//void setup() 
-//{
-//  // Set all the pins of 74HC595 as OUTPUT
+//int latchPin = 3;
+//int clockPin = 4;
+//int dataPin = 2;
+//int d0=5;
+//int d1=6;
+//int d2=7;
+//int d3=8;
+//
+//void setup() {
 //  pinMode(latchPin, OUTPUT);
-//  pinMode(dataPin, OUTPUT);  
 //  pinMode(clockPin, OUTPUT);
+//  pinMode(dataPin, OUTPUT);
+//  pinMode(d0, OUTPUT);
+//  pinMode(d1, OUTPUT);
+//  pinMode(d2, OUTPUT);
+//  pinMode(d3, OUTPUT);
+//  Serial.begin(9600);
 //}
 //
-//void loop() 
-//{
-//  digitalWrite(latchPin, LOW);  // 送資料前要先把 latchPin 設成低電位
-//  shiftOut(dataPin, clockPin, LSBFIRST, 170);  //送出資料，170就是2進位的10101010
-//  digitalWrite(latchPin, HIGH); // 送完資料後要把 latchPin 設成高電位
-//  delay(300);
-//  digitalWrite(latchPin, LOW);
-//  shiftOut(dataPin, clockPin, LSBFIRST, 85);  //85就是2進位的01010101
-//  digitalWrite(latchPin, HIGH);
-//  delay(300);
+//void loop() {
+//  show4Num(1234);
 //}
+//void showNum(int num, int digit) {
+//  if(num>=0 && num<=10)
+//  {
+//    for(int i=d0; i<=d3; i++)
+//    {
+//        digitalWrite(i,HIGH);
+//    }
+//    
+//    int numberToDisplay = digitNumber[num];
+//    byte low_Byte = lowByte(numberToDisplay);
+//      
+//    digitalWrite(latchPin, LOW);
+//    shiftOut(dataPin, clockPin, MSBFIRST, low_Byte);  
+//    digitalWrite(latchPin, HIGH);
+//
+//    digitalWrite(digit, LOW);
+//  }
+//}
+//void show4Num(int num)
+//{
+//  if(num>=0 && num<=9999)
+//  {
+//    int d = num/1000;
+//    showNum(d, d3);
+//    num = num%1000;
+//    delay(5);
+//
+//    d = num/100;
+//    showNum(d, d2);
+//    num = num%100;
+//    delay(5);
+//
+//    d = num/10;
+//    showNum(d, d1);
+//    num = num%10;
+//    delay(5);
+//
+//    d = num;
+//    showNum(d, d0);
+//    delay(5);
+//  }
+//}
+
