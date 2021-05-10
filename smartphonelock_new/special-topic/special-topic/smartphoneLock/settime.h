@@ -11,8 +11,8 @@ char keymap[KEY_ROWS][KEY_COLS] = {
   {'*', '0', '#', 'D'}
 };
 
-byte colPins[KEY_COLS] = {9, 8, 7, 6};     // 按鍵模組，行1~4接腳。
-byte rowPins[KEY_ROWS] = {13, 12, 11, 10}; // 按鍵模組，列1~4接腳。 
+byte colPins[KEY_COLS] = {22, 24, 26, 28};     // 按鍵模組，行1~4接腳。
+byte rowPins[KEY_ROWS] = {30, 32, 34, 36}; // 按鍵模組，列1~4接腳。 
 
 // 初始化Keypad物件
 // 語法：Keypad(makeKeymap(按鍵字元的二維陣列), 模組列接腳, 模組行接腳, 模組列數, 模組行數)
@@ -32,16 +32,17 @@ int setTime()
     {
       if(key=='#')
         break;
-      else if(key>='0' && key<='9')
+      else if(key>='0' && key<='9' && digis<4)
       {
         t = t*10 + (key-'0');
         digis++;
         Serial.println(t);
-        if(digis==4)  // 一輸入四位數就離開
-          break;
       }
       else if(key=='*')
+      {
         t=0;
+        digis=0;
+      }
 
      }
   }
