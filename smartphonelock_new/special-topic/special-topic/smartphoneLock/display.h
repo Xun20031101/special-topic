@@ -5,10 +5,10 @@ int digitNumber[11] =
 int latchPin = 3;
 int clockPin = 4;
 int dataPin = 2;
-int d0=5;
-int d1=6;
-int d2=7;
-int d3=8;
+int d0=8;
+int d1=7;
+int d2=6;
+int d3=5;
 
 
 void showNum(int num, int digit) {
@@ -16,7 +16,7 @@ void showNum(int num, int digit) {
   {
     for(int i=d0; i<=d3; i++)
     {
-        digitalWrite(i,HIGH);
+        digitalWrite(i,LOW);
     }
     
     int numberToDisplay = digitNumber[num];
@@ -26,7 +26,7 @@ void showNum(int num, int digit) {
     shiftOut(dataPin, clockPin, MSBFIRST, low_Byte);  
     digitalWrite(latchPin, HIGH);
 
-    digitalWrite(digit, LOW);
+    digitalWrite(digit, HIGH);
   }
 }
 void show4Num(int num)
