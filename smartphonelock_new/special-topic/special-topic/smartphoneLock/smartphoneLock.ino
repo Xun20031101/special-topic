@@ -32,7 +32,7 @@ void loop() {
     Serial.print("set time to ");
     Serial.println(T);
   }
-  int show4Num(1234);
+  int show4Num(T);
   // 確認是否有新卡片
   if (mfrc522.PICC_IsNewCardPresent() && mfrc522.PICC_ReadCardSerial()) 
   {
