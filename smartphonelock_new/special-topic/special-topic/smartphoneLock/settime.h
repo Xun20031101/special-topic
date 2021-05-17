@@ -1,5 +1,6 @@
 #include <Keypad.h>    // 引用Keypad程式庫
 
+
 #define KEY_ROWS 4 // 按鍵模組的列數
 #define KEY_COLS 4 // 按鍵模組的行數
 
@@ -11,8 +12,8 @@ char keymap[KEY_ROWS][KEY_COLS] = {
   {'*', '0', '#', 'D'}
 };
 
-byte colPins[KEY_COLS] = {22, 24, 26, 28};     // 按鍵模組，行1~4接腳。
-byte rowPins[KEY_ROWS] = {30, 32, 34, 36}; // 按鍵模組，列1~4接腳。 
+byte colPins[KEY_COLS] = {30, 32, 34, 36};     // 按鍵模組，行1~4接腳。
+byte rowPins[KEY_ROWS] = {22, 24, 26, 28}; // 按鍵模組，列1~4接腳。 
 
 // 初始化Keypad物件
 // 語法：Keypad(makeKeymap(按鍵字元的二維陣列), 模組列接腳, 模組行接腳, 模組列數, 模組行數)
@@ -22,6 +23,7 @@ int T;
 
 int setTime()
 {
+  Serial.println("Ready for settime");
   int t=0;
   int digis = 0;
 
@@ -31,6 +33,7 @@ int setTime()
     if(key)
     {
       if(key=='#')
+        
         break;
       else if(key>='0' && key<='9' && digis<4)
       {
@@ -38,14 +41,15 @@ int setTime()
         digis++;
         Serial.println(t);
       }
+      else if(key>='0' && key<='9' && digis>=4)
+        t=t;
       else if(key=='*')
       {
         t=0;
         digis=0;
       }
-
-     }
+    }
   }
-
-  return t;
+  
+  return  t;
 }
