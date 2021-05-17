@@ -2,10 +2,11 @@
 #include "Motor.h"
 #include "rfid.h"
 #include "settime.h"
+unsigned long STOPtime;
 
 void setup() {
   T = 0;
-  Serial.begin(9600);
+  Serial.begin(9600); 
   Serial.print("size of RFIDTag:");
   Serial.println(sizeof(RFIDTag));
   Serial.print("size of tag:");
@@ -20,19 +21,27 @@ void setup() {
   pinMode(d1, OUTPUT);
   pinMode(d2, OUTPUT);
   pinMode(d3, OUTPUT);
+  servo.attach(SERVO_PIN);  
+  locker(lockerSwitch);
+  servo.write(90);  // 開鎖
 }
 
 void loop() {
+  
   // 透過Keypad物件的getKey()方法讀取按鍵的字元
   char key = myKeypad.getKey();
-
+  int STOPtime;
   if (key=='A')
   {  // 若有按鍵被按下…
     T=setTime();
     Serial.print("set time to ");
     Serial.println(T);
+    servo.write(0);
+    STOPtime=millis();
+    
+  Serial.println(STOPtime);
   }
-  int show4Num(T);
+  show4Num(T);
   // 確認是否有新卡片
   if (mfrc522.PICC_IsNewCardPresent() && mfrc522.PICC_ReadCardSerial()) 
   {
