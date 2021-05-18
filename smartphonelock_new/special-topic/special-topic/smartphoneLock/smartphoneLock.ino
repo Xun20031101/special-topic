@@ -2,10 +2,11 @@
 #include "Motor.h"
 #include "rfid.h"
 #include "settime.h"
-unsigned long STOPtime;
+unsigned long STOPtime,OVERtime,Time;
 
 void setup() {
   T = 0;
+  Time=0;
   Serial.begin(9600); 
   Serial.print("size of RFIDTag:");
   Serial.println(sizeof(RFIDTag));
@@ -13,7 +14,8 @@ void setup() {
   Serial.println(sizeof(tags));
   Serial.println("RFID reader is ready!");
   SPI.begin();
-  mfrc522.PCD_Init();       // 初始化MFRC522讀卡機模組
+  mfrc522.PCD_Init();
+  servo.attach(SERVO_PIN);      // 初始化MFRC522讀卡機模組
   pinMode(latchPin, OUTPUT);
   pinMode(clockPin, OUTPUT);
   pinMode(dataPin, OUTPUT);
@@ -21,7 +23,7 @@ void setup() {
   pinMode(d1, OUTPUT);
   pinMode(d2, OUTPUT);
   pinMode(d3, OUTPUT);
-  servo.attach(SERVO_PIN);  
+    
   locker(lockerSwitch);
   servo.write(90);  // 開鎖
 }
@@ -30,8 +32,7 @@ void loop() {
   
   // 透過Keypad物件的getKey()方法讀取按鍵的字元
   char key = myKeypad.getKey();
-  int STOPtime;
-  if (key=='A')
+  if (key=='A'&&STOPtime==0)
   {  // 若有按鍵被按下…
     T=setTime();
     Serial.print("set time to ");
@@ -40,8 +41,9 @@ void loop() {
     STOPtime=millis();
     
   Serial.println(STOPtime);
-  }
   show4Num(T);
+  }
+  
   // 確認是否有新卡片
   if (mfrc522.PICC_IsNewCardPresent() && mfrc522.PICC_ReadCardSerial()) 
   {
@@ -61,5 +63,13 @@ void loop() {
         break;  // 退出for迴圈
       }
      }
+  }
+  if(STOPtime!=0)
+    OVERtime=millis();
+    Time=(OVERtime-STOPtime)/60000; //min
+  if(Time==T)
+  {
+    servo.write(90);  // 開鎖
+    STOPtime=0;
   }
 }
